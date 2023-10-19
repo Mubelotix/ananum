@@ -55,9 +55,9 @@ impl Matrix {
     }
 
     pub fn set_line(&mut self, i: usize, line: Matrix) {
-        assert!(i < self.n);
-        assert_eq!(line.n, 1);
-        assert_eq!(line.p, self.p);
+        assert!(i < self.n, "Cannot set line over matrix bounds");
+        assert_eq!(line.n, 1, "Cannot set line with a non-line matrix");
+        assert_eq!(line.p, self.p, "Cannot set line with a matrix of different size");
         for j in 0..self.p {
             self[(i, j)] = line[(0, j)];
         }
@@ -72,9 +72,9 @@ impl Matrix {
     }
 
     pub fn set_column(&mut self, j: usize, column: Matrix) {
-        assert!(j < self.p);
-        assert_eq!(column.p, 1);
-        assert_eq!(column.n, self.n);
+        assert!(j < self.p, "Cannot set column over matrix bounds");
+        assert_eq!(column.p, 1, "Cannot set column with a non-column matrix");
+        assert_eq!(column.n, self.n, "Cannot set column with a matrix of different size");
         for i in 0..self.n {
             self[(i, j)] = column[(i, 0)];
         }
@@ -83,7 +83,7 @@ impl Matrix {
 
 impl std::fmt::Debug for Matrix {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let mut result = String::new();
+        let mut result = format!("Matrix {}x{}:\n", self.n, self.p);
         for i in 0..self.n {
             for j in 0..self.p {
                 result.push_str(&format!("{}", self[(i, j)]));
@@ -115,8 +115,8 @@ impl std::ops::Index<(usize, usize)> for Matrix {
 
     #[track_caller]
     fn index(&self, (i, j): (usize, usize)) -> &Self::Output {
-        assert!(i < self.n);
-        assert!(j < self.p);
+        assert!(i < self.n, "Index i out of bounds");
+        assert!(j < self.p, "Index j out of bounds");
         &self.data[i * self.p + j]
     }
 }
@@ -124,8 +124,8 @@ impl std::ops::Index<(usize, usize)> for Matrix {
 impl std::ops::IndexMut<(usize, usize)> for Matrix {
     #[track_caller]
     fn index_mut(&mut self, (i, j): (usize, usize)) -> &mut Self::Output {
-        assert!(i < self.n);
-        assert!(j < self.p);
+        assert!(i < self.n, "Index i out of bounds");
+        assert!(j < self.p, "Index j out of bounds");
         &mut self.data[i * self.p + j]
     }
 }
@@ -135,8 +135,8 @@ impl std::ops::Add<Matrix> for Matrix {
 
     #[track_caller]
     fn add(self, rhs: Matrix) -> Self::Output {
-        assert_eq!(self.n, rhs.n);
-        assert_eq!(self.p, rhs.p);
+        assert_eq!(self.n, rhs.n, "Cannot add matrices of different sizes");
+        assert_eq!(self.p, rhs.p, "Cannot add matrices of different sizes");
         let mut result = Matrix::new(self.n, self.p);
         for i in 0..self.n {
             for j in 0..self.p {
@@ -152,7 +152,7 @@ impl std::ops::Mul<&Matrix> for Matrix {
 
     #[track_caller]
     fn mul(self, rhs: &Matrix) -> Self::Output {
-        assert_eq!(self.p, rhs.n);
+        assert_eq!(self.p, rhs.n, "Cannot multiply matrices of incompatible sizes: {:?} and {:?}", self, rhs);
         let mut result = Matrix::new(self.n, rhs.p);
         for i in 0..self.n {
             for j in 0..rhs.p {

@@ -5,7 +5,7 @@ pub fn gaxpy_ligne(a: Matrix, x: &Matrix, y: &mut Matrix) {
     assert_eq!(a.n, y.n);
     assert_eq!(x.p, y.p);
     for i in 0..y.n {
-        y.set_line(i, a.column(i) * x + y.line(i))
+        y.set_line(i, a.line(i) * x + y.line(i))
     }
 }
 
