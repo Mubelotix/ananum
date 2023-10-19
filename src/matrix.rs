@@ -62,6 +62,34 @@ impl Matrix {
         true
     }
 
+    pub fn is_lower_triangular(&self) -> bool {
+        if self.n != self.p {
+            return false;
+        }
+        for i in 0..self.n {
+            for j in 0..self.p {
+                if i<j && self[(i, j)] != 0.0 {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
+    pub fn is_upper_triangular(&self) -> bool {
+        if self.n != self.p {
+            return false;
+        }
+        for i in 0..self.n {
+            for j in 0..self.p {
+                if j<i && self[(i, j)] != 0.0 {
+                    return false;
+                }
+            }
+        }
+        true
+    }
+
     pub fn transpose(&self) -> Matrix {
         let mut transposed = Matrix::new(self.p, self.n);
         for i in 0..self.n {
@@ -305,5 +333,20 @@ mod tests {
         let m2 = 2 * m1;
         let expected_m2 = Matrix::from(vec![vec![2, 4], vec![6, 8]]);
         assert_eq!(m2, expected_m2);
+    }
+
+    #[test]
+    fn test_triangular_checks() {
+        let m1 = Matrix::from(vec![vec![1, 2], vec![3, 4]]);
+        assert!(!m1.is_lower_triangular());
+        assert!(!m1.is_upper_triangular());
+
+        let l1 = Matrix::from(vec![vec![1, 0], vec![3, 4]]);
+        assert!(l1.is_lower_triangular());
+        assert!(!l1.is_upper_triangular());
+
+        let u1 = Matrix::from(vec![vec![1, 2], vec![0, 4]]);
+        assert!(!u1.is_lower_triangular());
+        assert!(u1.is_upper_triangular());
     }
 }
