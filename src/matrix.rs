@@ -29,6 +29,22 @@ impl Matrix {
     pub fn t(&self) -> Matrix {
         self.transpose()
     }
+
+    pub fn line(&self, i: usize) -> Matrix {
+        let mut line = Matrix::new(1, self.p);
+        for j in 0..self.p {
+            line[(0, j)] = self[(i, j)];
+        }
+        line
+    }
+
+    pub fn column(&self, j: usize) -> Matrix {
+        let mut column = Matrix::new(self.n, 1);
+        for i in 0..self.n {
+            column[(i, 0)] = self[(i, j)];
+        }
+        column
+    }
 }
 
 impl std::fmt::Debug for Matrix {
@@ -143,5 +159,16 @@ mod tests {
         let m2 = m1.transpose();
         let expected_m2 = Matrix::from(vec![vec![1, 3], vec![2, 4]]);
         assert_eq!(m2, expected_m2);
+    }
+
+    #[test]
+    fn test_line_column() {
+        let m1 = Matrix::from(vec![vec![1, 2], vec![3, 4]]);
+        let c1 = m1.column(0);
+        let expected_c1 = Matrix::from(vec![vec![1], vec![3]]);
+        assert_eq!(c1, expected_c1);
+        let l2 = m1.line(1);
+        let expected_l2 = Matrix::from(vec![vec![3, 4]]);
+        assert_eq!(l2, expected_l2);
     }
 }
