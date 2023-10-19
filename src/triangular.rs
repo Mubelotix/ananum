@@ -43,6 +43,36 @@ pub fn solves_lower_triangular_mat(l: &Matrix, b: &Matrix) -> Matrix {
     x
 }
 
+pub fn invert(l: &Matrix) -> Matrix {
+    let b = Matrix::from_column(vec![1; l.n]);
+
+    assert!(l.is_lower_triangular(), "l isn't lower triangular");
+    assert!(b.is_column(), "b isn't a column");
+    assert_eq!(l.n, b.n, "l and b have incompatible sizes");
+
+    let mut ms = Vec::new();
+    for j in 0..l.p {
+        let mut tau_j = (1.0 / l[(j,j)]) * l.column(j);
+        tau_j[j] = 1.0 - (1.0 / l[(j,j)]);
+        for j2 in 0..j {
+            tau_j[j2] = 0.0;
+        }
+
+        let mut e_j = Matrix::new_column(l.n);
+        e_j[j] = 1.0;
+
+        let m_j = Matrix::id(l.n) - tau_j * e_j.t();
+
+        ms.push(m_j);
+    }
+
+    let mut inv = Matrix::id(l.n);
+    for m in ms.iter().rev() {
+        inv = inv * m;
+    }
+    inv
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -63,5 +93,14 @@ mod tests {
         let x = solves_lower_triangular_mat(&l, &b);
         let b2 = l * x;
         assert!(b.all_close(&b2));
+    }
+
+    #[test]
+    fn test_inv() {
+        let l = Matrix::from(vec![vec![1, 0, 0], vec![2, 3, 0], vec![4, 5, 6]]);
+        let inv = invert(&l);
+        let prod = l * &inv;
+        let id = Matrix::id(3);
+        assert!(prod.all_close(&id));
     }
 }
