@@ -23,8 +23,8 @@ mod tests {
 
     #[test]
     fn test_solves_lower_triangular() {
-        let l = Matrix::from(vec![vec![1, 0], vec![2, 3]]);
-        let b = Matrix::new_column(vec![4, 5]);
+        let l = Matrix::from(vec![vec![1, 0, 0], vec![2, 3, 0], vec![4, 5, 6]]);
+        let b = Matrix::new_column(vec![7, 8, 9]);
         let x = solves_lower_triangular(&l, &b);
         let b2 = l * x;
         assert_eq!(b, b2);
