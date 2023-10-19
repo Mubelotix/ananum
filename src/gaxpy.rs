@@ -4,7 +4,7 @@ pub fn gaxpy_line(a: Matrix, x: &Matrix, y: &mut Matrix) {
     assert_eq!(a.p, x.n);
     assert_eq!(a.n, y.n);
     assert_eq!(x.p, y.p);
-    for i in 0..y.n {
+    for i in 0..a.n {
         y.set_line(i, a.line(i) * x + y.line(i))
     }
 }
@@ -13,7 +13,7 @@ pub fn gaxpy_column(a: Matrix, x: &Matrix, y: &mut Matrix) {
     assert_eq!(a.p, x.n);
     assert_eq!(a.n, y.n);
     assert_eq!(x.p, y.p);
-    for j in 0..y.p {
+    for j in 0..a.p {
         *y = a.column(j) * x[(j, 0)] + y.to_owned();
     }
 }
