@@ -16,6 +16,21 @@ impl Matrix {
     }
 }
 
+impl<T: Copy + Into<f64>> From<Vec<Vec<T>>> for Matrix {
+    fn from(value: Vec<Vec<T>>) -> Self {
+        let n = value.len();
+        let p = value[0].len();
+        assert!(value.iter().all(|row| row.len() == p));
+        let mut result = Self::new(n, p);
+        for i in 0..n {
+            for j in 0..p {
+                result[(i, j)] = value[i][j].into();
+            }
+        }
+        result
+    }
+}
+
 impl std::ops::Index<(usize, usize)> for Matrix {
     type Output = f64;
 
