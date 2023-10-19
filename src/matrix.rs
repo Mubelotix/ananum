@@ -131,6 +131,34 @@ impl std::ops::Mul<Matrix> for Matrix {
     }
 }
 
+impl std::ops::Mul<Matrix> for f64 {
+    type Output = Matrix;
+
+    fn mul(self, rhs: Matrix) -> Self::Output {
+        let mut result = Matrix::new(rhs.n, rhs.p);
+        for i in 0..rhs.n {
+            for j in 0..rhs.p {
+                result[(i, j)] = self * rhs[(i, j)];
+            }
+        }
+        result
+    }
+}
+
+impl std::ops::Mul<Matrix> for usize {
+    type Output = Matrix;
+
+    fn mul(self, rhs: Matrix) -> Self::Output {
+        let mut result = Matrix::new(rhs.n, rhs.p);
+        for i in 0..rhs.n {
+            for j in 0..rhs.p {
+                result[(i, j)] = self as f64 * rhs[(i, j)];
+            }
+        }
+        result
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -170,5 +198,13 @@ mod tests {
         let l2 = m1.line(1);
         let expected_l2 = Matrix::from(vec![vec![3, 4]]);
         assert_eq!(l2, expected_l2);
+    }
+
+    #[test]
+    fn test_mul_constant() {
+        let m1 = Matrix::from(vec![vec![1, 2], vec![3, 4]]);
+        let m2 = 2 * m1;
+        let expected_m2 = Matrix::from(vec![vec![2, 4], vec![6, 8]]);
+        assert_eq!(m2, expected_m2);
     }
 }
