@@ -24,6 +24,10 @@ impl Matrix {
         result
     }
 
+    pub fn is_column(&self) -> bool {
+        self.p == 1
+    }
+
     pub fn new_line<T: Copy + Into<f64>>(line: Vec<T>) -> Self {
         let mut result = Matrix::new(1, line.len());
         for j in 0..line.len() {
@@ -32,12 +36,30 @@ impl Matrix {
         result
     }
 
+    pub fn is_line(&self) -> bool {
+        self.n == 1
+    }
+
     pub fn new_diag<T: Copy + Into<f64>>(line: Vec<T>) -> Self {
         let mut result = Matrix::new(line.len(), line.len());
         for k in 0..line.len() {
             result[(k, k)] = line[k].into();
         }
         result
+    }
+
+    pub fn is_diag(&self) -> bool {
+        if self.n != self.p {
+            return false;
+        }
+        for i in 0..self.n {
+            for j in 0..self.p {
+                if i!=j && self[(i, j)] != 0.0 {
+                    return false;
+                }
+            }
+        }
+        true
     }
 
     pub fn transpose(&self) -> Matrix {
@@ -234,14 +256,17 @@ mod tests {
         assert_eq!(matrix[(1, 1)], 4.0);
 
         let column = Matrix::new_column(vec![1, 2]);
+        assert!(column.is_column());
         assert_eq!(column[(0, 0)], 1.0);
         assert_eq!(column[(1, 0)], 2.0);
 
         let line = Matrix::new_line(vec![1, 2]);
+        assert!(line.is_line());
         assert_eq!(line[(0, 0)], 1.0);
         assert_eq!(line[(0, 1)], 2.0);
 
         let diag = Matrix::new_diag(vec![1, 2]);
+        assert!(diag.is_diag());
         assert_eq!(diag[(0, 0)], 1.0);
         assert_eq!(diag[(1, 1)], 2.0);
     }

@@ -2,9 +2,9 @@ pub use crate::*;
 
 // Finds x such as `Dx=b`
 pub fn solves_diag(d: &Matrix, b: &Matrix) -> Matrix {
-    assert_eq!(d.n, d.p, "Matrix isn't diagonal");
-    assert_eq!(d.n, b.n);
-    assert_eq!(b.p, 1, "b isn't a column");
+    assert!(d.is_diag(), "d isn't diagonal");
+    assert!(b.is_column(), "b isn't a column");
+    assert_eq!(d.n, b.n, "incompatible sizes");
     let mut x = Matrix::new(d.p, 1);
     for k in 0..d.n {
         x[(k, 0)] = b[(k, 0)] / d[(k, k)];
