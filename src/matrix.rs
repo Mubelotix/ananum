@@ -1,5 +1,6 @@
 pub use crate::*;
 
+#[derive(Clone, PartialEq)]
 pub struct Matrix {
     n: usize,
     p: usize,
@@ -13,6 +14,20 @@ impl Matrix {
             p,
             data: vec![0.0; n * p],
         }
+    }
+}
+
+impl std::fmt::Debug for Matrix {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut result = String::new();
+        for i in 0..self.n {
+            for j in 0..self.p {
+                result.push_str(&format!("{}", self[(i, j)]));
+                result.push(' ');
+            }
+            result.push('\n');
+        }
+        write!(f, "{}", result)
     }
 }
 
@@ -83,5 +98,28 @@ impl std::ops::Mul<Matrix> for Matrix {
             }
         }
         result
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    pub fn test_from() {
+        let matrix = Matrix::from(vec![vec![1, 2], vec![3, 4]]);
+        assert_eq!(matrix[(0, 0)], 1.0);
+        assert_eq!(matrix[(0, 1)], 2.0);
+        assert_eq!(matrix[(1, 0)], 3.0);
+        assert_eq!(matrix[(1, 1)], 4.0);
+    }
+
+    #[test]
+    pub fn test_add() {
+        let m1 = Matrix::from(vec![vec![1, 2], vec![3, 4]]);
+        let m2 = Matrix::from(vec![vec![5, 6], vec![7, 8]]);
+        let m3 = m1 + m2;
+        let expected_m3 = Matrix::from(vec![vec![6, 8], vec![10, 12]]);
+        assert_eq!(m3, expected_m3);
     }
 }
