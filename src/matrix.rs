@@ -16,8 +16,12 @@ impl Matrix {
         }
     }
 
-    pub fn new_column<T: Copy + Into<f64>>(column: Vec<T>) -> Self {
-        let mut result = Matrix::new(column.len(), 1);
+    pub fn new_column(p: usize) -> Self {
+        Matrix::new(p, 1)
+    }
+
+    pub fn from_column<T: Copy + Into<f64>>(column: Vec<T>) -> Self {
+        let mut result = Matrix::new_column(column.len());
         for i in 0..column.len() {
             result[(i, 0)] = column[i].into();
         }
@@ -28,8 +32,12 @@ impl Matrix {
         self.p == 1
     }
 
-    pub fn new_line<T: Copy + Into<f64>>(line: Vec<T>) -> Self {
-        let mut result = Matrix::new(1, line.len());
+    pub fn new_line(n: usize) -> Self {
+        Matrix::new(1, n)
+    }
+
+    pub fn from_line<T: Copy + Into<f64>>(line: Vec<T>) -> Self {
+        let mut result = Matrix::new_line(line.len());
         for j in 0..line.len() {
             result[(0, j)] = line[j].into();
         }
@@ -40,8 +48,12 @@ impl Matrix {
         self.n == 1
     }
 
-    pub fn new_diag<T: Copy + Into<f64>>(line: Vec<T>) -> Self {
-        let mut result = Matrix::new(line.len(), line.len());
+    pub fn new_diag(n: usize) -> Self {
+        Matrix::new(n, n)
+    }
+
+    pub fn from_diag<T: Copy + Into<f64>>(line: Vec<T>) -> Self {
+        let mut result = Matrix::new_diag(line.len());
         for k in 0..line.len() {
             result[(k, k)] = line[k].into();
         }
@@ -60,6 +72,14 @@ impl Matrix {
             }
         }
         true
+    }
+
+    pub fn id(n: usize) -> Self {
+        let mut id = Matrix::new_diag(n);
+        for i in 0..n {
+            id[(i, i)] = 1.0;
+        }
+        id
     }
 
     pub fn is_lower_triangular(&self) -> bool {
@@ -136,6 +156,19 @@ impl Matrix {
         for i in 0..self.n {
             self[(i, j)] = column[(i, 0)];
         }
+    }
+
+    pub fn all_close(&self, other: &Matrix) -> bool {
+        assert_eq!(self.n, other.n);
+        assert_eq!(self.p, other.p);
+        for i in 0..self.n {
+            for j in 0..self.p {
+                if (self[(i, j)] - other[(i, j)]).abs() > 0.001 {
+                    return false;
+                }
+            }
+        }
+        true
     }
 }
 
@@ -233,6 +266,23 @@ impl std::ops::Add<Matrix> for Matrix {
     }
 }
 
+impl std::ops::Sub<Matrix> for Matrix {
+    type Output = Matrix;
+
+    #[track_caller]
+    fn sub(self, rhs: Matrix) -> Self::Output {
+        assert_eq!(self.n, rhs.n, "Cannot add matrices of different sizes");
+        assert_eq!(self.p, rhs.p, "Cannot add matrices of different sizes");
+        let mut result = Matrix::new(self.n, self.p);
+        for i in 0..self.n {
+            for j in 0..self.p {
+                result[(i, j)] = self[(i, j)] - rhs[(i, j)];
+            }
+        }
+        result
+    }
+}
+
 impl std::ops::Mul<&Matrix> for Matrix {
     type Output = Matrix;
 
@@ -311,17 +361,17 @@ mod tests {
         assert_eq!(matrix[(1, 0)], 3.0);
         assert_eq!(matrix[(1, 1)], 4.0);
 
-        let column = Matrix::new_column(vec![1, 2]);
+        let column = Matrix::from_column(vec![1, 2]);
         assert!(column.is_column());
         assert_eq!(column[(0, 0)], 1.0);
         assert_eq!(column[(1, 0)], 2.0);
 
-        let line = Matrix::new_line(vec![1, 2]);
+        let line = Matrix::from_line(vec![1, 2]);
         assert!(line.is_line());
         assert_eq!(line[(0, 0)], 1.0);
         assert_eq!(line[(0, 1)], 2.0);
 
-        let diag = Matrix::new_diag(vec![1, 2]);
+        let diag = Matrix::from_diag(vec![1, 2]);
         assert!(diag.is_diag());
         assert_eq!(diag[(0, 0)], 1.0);
         assert_eq!(diag[(1, 1)], 2.0);

@@ -18,10 +18,10 @@ mod tests {
 
     #[test]
     fn test_solves_diag() {
-        let d = Matrix::new_diag(vec![1, 2, 3, 4]);
-        let b = Matrix::new_column(vec![5, 6, 7, 8]);
+        let d = Matrix::from_diag(vec![1, 2, 3, 4]);
+        let b = Matrix::from_column(vec![5, 6, 7, 8]);
         let x = solves_diag(&d, &b);
         let b2 = d * x;
-        assert_eq!(b, b2);
+        assert!(b.all_close(&b2));
     }
 }

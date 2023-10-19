@@ -25,20 +25,20 @@ mod tests {
     #[test]
     fn test_gaxpy_line() {
         let a = Matrix::from(vec![vec![1, 2], vec![3, 4]]);
-        let x = Matrix::new_column(vec![5, 6]);
-        let mut y = Matrix::new_column(vec![7, 8]);
+        let x = Matrix::from_column(vec![5, 6]);
+        let mut y = Matrix::from_column(vec![7, 8]);
         gaxpy_line(a, &x, &mut y);
-        let expected_y = Matrix::new_column(vec![24, 47]);
+        let expected_y = Matrix::from_column(vec![24, 47]);
         assert_eq!(y, expected_y);
     }
 
     #[test]
     fn test_gaxpy_column() {
         let a = Matrix::from(vec![vec![1, 2], vec![3, 4]]);
-        let x = Matrix::new_column(vec![5, 6]);
-        let mut y = Matrix::new_column(vec![7, 8]);
+        let x = Matrix::from_column(vec![5, 6]);
+        let mut y = Matrix::from_column(vec![7, 8]);
         gaxpy_column(a, &x, &mut y);
-        let expected_y = Matrix::new_column(vec![24, 47]);
+        let expected_y = Matrix::from_column(vec![24, 47]);
         assert_eq!(y, expected_y);
     }
 }
