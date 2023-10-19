@@ -73,6 +73,26 @@ pub fn invert(l: &Matrix) -> Matrix {
     inv
 }
 
+pub fn solves_upper_triangular(u: &Matrix, b: &Matrix) -> Matrix {
+    assert!(u.is_upper_triangular(), "u isn't upper triangular");
+    assert!(b.is_column(), "b isn't a column");
+    assert_eq!(u.n, b.n, "u and b have incompatible sizes");
+    let (n, _p) = (u.n, u.p);
+
+    let mut x = Matrix::new_column(n);
+    x[n-1] = b[n-1] / u[(n-1,n-1)];
+
+    for i in (0..n-1).rev() {
+        let mut s = 0.0;
+        for j in i+1..n {
+            s += u[(i,j)] * x[j];
+        }
+        x[i] = (b[i] - s) / u[(i,i)];
+    }
+
+    x
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -92,6 +112,16 @@ mod tests {
         let b = Matrix::from_column(vec![7, 8, 9]);
         let x = solves_lower_triangular_mat(&l, &b);
         let b2 = l * x;
+        assert!(b.all_close(&b2));
+    }
+
+    #[test]
+    fn test_solves_upper_triangular() {
+        let u = Matrix::from(vec![vec![1, 2], vec![0, 3]]);
+        let b = Matrix::from_column(vec![4, 5]);
+        let x = solves_upper_triangular(&u, &b);
+        let b2 = u * x;
+        println!("{b2:?}");
         assert!(b.all_close(&b2));
     }
 
