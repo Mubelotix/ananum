@@ -32,6 +32,14 @@ impl Matrix {
         result
     }
 
+    pub fn new_diag<T: Copy + Into<f64>>(line: Vec<T>) -> Self {
+        let mut result = Matrix::new(line.len(), line.len());
+        for k in 0..line.len() {
+            result[(k, k)] = line[k].into();
+        }
+        result
+    }
+
     pub fn transpose(&self) -> Matrix {
         let mut transposed = Matrix::new(self.p, self.n);
         for i in 0..self.n {
@@ -232,6 +240,10 @@ mod tests {
         let line = Matrix::new_line(vec![1, 2]);
         assert_eq!(line[(0, 0)], 1.0);
         assert_eq!(line[(0, 1)], 2.0);
+
+        let diag = Matrix::new_diag(vec![1, 2]);
+        assert_eq!(diag[(0, 0)], 1.0);
+        assert_eq!(diag[(1, 1)], 2.0);
     }
 
     #[test]
