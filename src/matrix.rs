@@ -2,8 +2,8 @@ pub use crate::*;
 
 #[derive(Clone, PartialEq)]
 pub struct Matrix {
-    n: usize,
-    p: usize,
+    pub n: usize,
+    pub p: usize,
     data: Vec<f64>,
 }
 
@@ -14,6 +14,22 @@ impl Matrix {
             p,
             data: vec![0.0; n * p],
         }
+    }
+
+    pub fn new_column<T: Copy + Into<f64>>(column: Vec<T>) -> Self {
+        let mut result = Matrix::new(column.len(), 1);
+        for i in 0..column.len() {
+            result[(i, 0)] = column[i].into();
+        }
+        result
+    }
+
+    pub fn new_line<T: Copy + Into<f64>>(line: Vec<T>) -> Self {
+        let mut result = Matrix::new(1, line.len());
+        for j in 0..line.len() {
+            result[(0, j)] = line[j].into();
+        }
+        result
     }
 
     pub fn transpose(&self) -> Matrix {
@@ -38,12 +54,30 @@ impl Matrix {
         line
     }
 
+    pub fn set_line(&mut self, i: usize, line: Matrix) {
+        assert!(i < self.n);
+        assert_eq!(line.n, 1);
+        assert_eq!(line.p, self.p);
+        for j in 0..self.p {
+            self[(i, j)] = line[(0, j)];
+        }
+    }
+
     pub fn column(&self, j: usize) -> Matrix {
         let mut column = Matrix::new(self.n, 1);
         for i in 0..self.n {
             column[(i, 0)] = self[(i, j)];
         }
         column
+    }
+
+    pub fn set_column(&mut self, j: usize, column: Matrix) {
+        assert!(j < self.p);
+        assert_eq!(column.p, 1);
+        assert_eq!(column.n, self.n);
+        for i in 0..self.n {
+            self[(i, j)] = column[(i, 0)];
+        }
     }
 }
 
@@ -113,11 +147,11 @@ impl std::ops::Add<Matrix> for Matrix {
     }
 }
 
-impl std::ops::Mul<Matrix> for Matrix {
+impl std::ops::Mul<&Matrix> for Matrix {
     type Output = Matrix;
 
     #[track_caller]
-    fn mul(self, rhs: Matrix) -> Self::Output {
+    fn mul(self, rhs: &Matrix) -> Self::Output {
         assert_eq!(self.p, rhs.n);
         let mut result = Matrix::new(self.n, rhs.p);
         for i in 0..self.n {
@@ -128,6 +162,15 @@ impl std::ops::Mul<Matrix> for Matrix {
             }
         }
         result
+    }
+}
+
+impl std::ops::Mul<Matrix> for Matrix {
+    type Output = Matrix;
+
+    #[track_caller]
+    fn mul(self, rhs: Matrix) -> Self::Output {
+        self.mul(&rhs)
     }
 }
 
@@ -170,6 +213,14 @@ mod tests {
         assert_eq!(matrix[(0, 1)], 2.0);
         assert_eq!(matrix[(1, 0)], 3.0);
         assert_eq!(matrix[(1, 1)], 4.0);
+
+        let column = Matrix::new_column(vec![1, 2]);
+        assert_eq!(column[(0, 0)], 1.0);
+        assert_eq!(column[(1, 0)], 2.0);
+
+        let line = Matrix::new_line(vec![1, 2]);
+        assert_eq!(line[(0, 0)], 1.0);
+        assert_eq!(line[(0, 1)], 2.0);
     }
 
     #[test]
