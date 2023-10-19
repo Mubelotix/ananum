@@ -6,16 +6,16 @@ pub fn lu_fact(a: &Matrix) -> Matrix {
     let (n, p) = (a.n, a.p);
 
     let mut u = a.to_owned();
-    for j in 0..p-1 {
-        let mut tau_j = (1.0 / u[(j,j)]) * u.column(j);
-        for j2 in 0..=j {
-            tau_j[j2] = 0.0;
+    for k in 0..p-1 {
+        let mut tau_k = (1.0 / u[(k,k)]) * u.column(k);
+        for j2 in 0..=k {
+            tau_k[j2] = 0.0;
         }
 
-        let mut e_j = Matrix::new_column(n);
-        e_j[j] = 1.0;
+        let mut e_k = Matrix::new_column(n);
+        e_k[k] = 1.0;
 
-        let m_j = Matrix::id(n) - tau_j * e_j.t();
+        let m_j = Matrix::id(n) - tau_k * e_k.t();
 
         u = m_j * u;
     }
