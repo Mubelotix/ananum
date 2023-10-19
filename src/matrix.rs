@@ -15,6 +15,20 @@ impl Matrix {
             data: vec![0.0; n * p],
         }
     }
+
+    pub fn transpose(&self) -> Matrix {
+        let mut transposed = Matrix::new(self.p, self.n);
+        for i in 0..self.n {
+            for j in 0..self.p {
+                transposed[(j, i)] = self[(i, j)];
+            }
+        }
+        transposed
+    }
+
+    pub fn t(&self) -> Matrix {
+        self.transpose()
+    }
 }
 
 impl std::fmt::Debug for Matrix {
@@ -106,7 +120,7 @@ mod tests {
     use super::*;
 
     #[test]
-    pub fn test_from() {
+    fn test_from() {
         let matrix = Matrix::from(vec![vec![1, 2], vec![3, 4]]);
         assert_eq!(matrix[(0, 0)], 1.0);
         assert_eq!(matrix[(0, 1)], 2.0);
@@ -115,11 +129,19 @@ mod tests {
     }
 
     #[test]
-    pub fn test_add() {
+    fn test_add() {
         let m1 = Matrix::from(vec![vec![1, 2], vec![3, 4]]);
         let m2 = Matrix::from(vec![vec![5, 6], vec![7, 8]]);
         let m3 = m1 + m2;
         let expected_m3 = Matrix::from(vec![vec![6, 8], vec![10, 12]]);
         assert_eq!(m3, expected_m3);
+    }
+
+    #[test]
+    fn test_transpose() {
+        let m1 = Matrix::from(vec![vec![1, 2], vec![3, 4]]);
+        let m2 = m1.transpose();
+        let expected_m2 = Matrix::from(vec![vec![1, 3], vec![2, 4]]);
+        assert_eq!(m2, expected_m2);
     }
 }
