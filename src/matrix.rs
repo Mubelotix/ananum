@@ -192,13 +192,24 @@ impl std::ops::Mul<Matrix> for usize {
     type Output = Matrix;
 
     fn mul(self, rhs: Matrix) -> Self::Output {
-        let mut result = Matrix::new(rhs.n, rhs.p);
-        for i in 0..rhs.n {
-            for j in 0..rhs.p {
-                result[(i, j)] = self as f64 * rhs[(i, j)];
-            }
-        }
-        result
+        let self2 = self as f64;
+        self2.mul(rhs)
+    }
+}
+
+impl std::ops::Mul<f64> for Matrix {
+    type Output = Matrix;
+
+    fn mul(self, rhs: f64) -> Self::Output {
+        rhs.mul(self)
+    }
+}
+
+impl std::ops::Mul<usize> for Matrix {
+    type Output = Matrix;
+
+    fn mul(self, rhs: usize) -> Self::Output {
+        rhs.mul(self)
     }
 }
 
