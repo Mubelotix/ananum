@@ -7,7 +7,7 @@ pub fn solves_diag(d: &Matrix, b: &Matrix) -> Matrix {
     assert_eq!(d.n, b.n, "incompatible sizes");
     let mut x = Matrix::new(d.p, 1);
     for k in 0..d.n {
-        x[(k, 0)] = b[(k, 0)] / d[(k, k)];
+        x[k] = b[k] / d[(k, k)];
     }
     x
 }

@@ -10,9 +10,9 @@ pub fn solves_lower_triangular(l: &Matrix, b: &Matrix) -> Matrix {
     for i in 0..l.n {
         let mut s = 0.0;
         for j in 0..i {
-            s += l[(i, j)] * x[(j, 0)];
+            s += l[(i, j)] * x[j];
         }
-        x[(i, 0)] = (b[(i, 0)] - s) / l[(i, i)];
+        x[i] = (b[i] - s) / l[(i, i)];
     }
     x
 }

@@ -179,12 +179,40 @@ impl std::ops::Index<(usize, usize)> for Matrix {
     }
 }
 
+impl std::ops::Index<usize> for Matrix {
+    type Output = f64;
+
+    #[track_caller]
+    fn index(&self, k: usize) -> &Self::Output {
+        if self.n == 1 {
+            self.index((0, k))
+        } else if self.p == 1 {
+            self.index((k, 0))
+        } else {
+            panic!("Vector indexation attempted on matrix")
+        }
+    }
+}
+
 impl std::ops::IndexMut<(usize, usize)> for Matrix {
     #[track_caller]
     fn index_mut(&mut self, (i, j): (usize, usize)) -> &mut Self::Output {
         assert!(i < self.n, "Index i out of bounds");
         assert!(j < self.p, "Index j out of bounds");
         &mut self.data[i * self.p + j]
+    }
+}
+
+impl std::ops::IndexMut<usize> for Matrix {
+    #[track_caller]
+    fn index_mut(&mut self, k: usize) -> &mut Self::Output {
+        if self.n == 1 {
+            self.index_mut((0, k))
+        } else if self.p == 1 {
+            self.index_mut((k, 0))
+        } else {
+            panic!("Vector indexation attempted on matrix")
+        }
     }
 }
 
